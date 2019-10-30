@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Intor Generator</title>
+</head>
+
+<body>
+    <form onsubmit="showIntro(event)" action="" method="GET">
+        <input id="userName" type="text" placeholder="Name" name="name">
+        <br>
+        <input id="userCity" type="text" placeholder="City">
+        <br>
+        <input id="userTitle" type="text" placeholder="Job">
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    <p id="result">Message</p>
+    <script>
+        console.log("hello world")
+        function showIntro(event) {
+            //event.preventDefault(); // disable refresh after submit 
+            const name = document.getElementById("userName").value;
+            const city = document.getElementById("userCity").value;
+            const title = document.getElementById("userTitle").value;
+            
+            const intro = `Hi, my name is ${name}, from ${city}. I'm a ${title}. Nice to meet you.`;
+
+            document.getElementById("result").innerText = intro;
+
+            const nameIn = document.getElementById("userName");
+            console.dir(nameIn);//check all attribute
+            nameIn.style.borderColor = '#FF0000';
+        }
+    </script>
+</body>
+
+</html>
