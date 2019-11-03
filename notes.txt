@@ -1,0 +1,10 @@
+1. ! tab
+2. live server, bootstrap 4 font awesome snippets
+3. console.dir
+4. string of type: `some message... ${variableName} some message... `
+5. form onSubmit event
+6. event.preventDefault()
+
+
+
+
