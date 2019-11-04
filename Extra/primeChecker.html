@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PrimeChecker</title>
+</head>
+
+<body>
+    <input type="text" id="inputNum" placeholder="input an integer">
+    <h3><span id="result"></span></h3>
+    <script>
+        let inputNum = document.getElementById("inputNum");
+        let result = document.getElementById("result");
+        function isPrime(num) {
+            if (num === 1) return false;
+            let bound = Math.floor(Math.sqrt(num));
+            for (let i = 2; i <= bound; i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+        function showResult() {
+            let str = inputNum.value;
+            if (!str.match(/^[0-9]+$/)) {// ^: start; +: repeat; $: end (ref regular expression)
+                result.innerText = `Invalid Input`;
+                return;
+            }
+            let num = parseInt(str);
+            if (num > Number.MAX_SAFE_INTEGER) {
+                result.innerText = `Input Integer Exceeds Limit`;
+                return;
+            }
+            result.innerText = isPrime(num)? `${num} is a prime number` : `${num} is not a prime number`;
+            return;
+        }
+        inputNum.addEventListener("keyup", showResult);
+    </script>
+</body>
+
+</html>
