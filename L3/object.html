@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Object</title>
+</head>
+
+<body>
+    <script>
+        const user1 = {
+            name: 'BYS',
+            age: 6,
+            phone: `01-2345-6789`,
+            isAdmin: false,
+            address: {
+                city: `earth`,
+                road: `mars`,
+                zip: `555`
+            },
+            introduce: function (greeting) {
+                if (!greeting) {
+                    greeting = `Hi`;
+                }
+                const str = `${greeting}, my name is ${this.name}, from ${this.address.city}`;
+                console.log(str);
+            },
+            introduceError: () => {
+                console.log(this);
+            },
+            getAge: function (year = 1) {
+                this.age += year;
+            }
+        };
+        console.log(user1);
+        console.log(`username is ${user1.name}`);
+        console.log(`username is ${user1[`name`]}`);
+        console.log(`username is ${user1.address.city}`);
+        console.log(`username is ${user1[`address`][`city`]}`);
+        
+        user1.introduce(`Hello`);
+        user1.introduce(`Yo`);
+        user1.introduce();
+        user1.introduceError();
+        
+    </script>
+</body>
+
+</html>
