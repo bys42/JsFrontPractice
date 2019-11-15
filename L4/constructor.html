@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Constructor</title>
+</head>
+
+<body>
+
+    <script>
+        const test = {
+            intro : function () {console.log(this)},
+            intro2 : () =>{console.log(this)}
+        }
+        test.intro();
+        test.intro2();
+
+
+        function Product(name, price) {
+            this.name = name;
+            this.price = price;
+            this.priceOnTax = price * 1.05;
+            this.intro = () => {console.log(this)}
+            this.intro2 = function() {console.log(this)}
+        }
+        const product1 = new Product('TestP', 1010);
+        const product12 = new Product('Test2246', 203);
+        product1.intro();
+        product1.intro2();
+        product12.intro();
+        product12.intro2();
+    </script>
+</body>
+
+</html>

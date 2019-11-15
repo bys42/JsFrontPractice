@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        const user1 = {
+            name: 'Test',
+            age: 6
+        };
+        console.log(user1);
+
+        user1.name = 'test1';
+        console.log(user1);
+
+        user1['name'] = 'test2'
+        console.log(user1);
+
+        const a = 'name';
+        user1.a = 'test3';
+        user1[a] = 'test4';
+        console.log(user1);
+
+        delete user1.a;
+        console.log(user1);
+
+        delete user1['age'];
+        console.log(user1);
+    </script>
+</body>
+
+</html>

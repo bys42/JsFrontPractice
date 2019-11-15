@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function Account(name, cash) {
+            // field: name balance
+            // method: deposit withdraw transfer show
+            //
+            this.name = name;
+            this.balance = cash;
+            this.deposit = function (cash) {
+                this.balance += cash;
+                console.log('<存款完成>');
+                this.show();
+            }
+            this.withdraw = function (num) {
+                if (this.balance < num) {
+                    console.log('<餘額不足>')
+                    return;
+                }
+                this.balance -= num;
+                console.log('<提款完成>');
+                this.show();
+            }
+            this.transfer = function (other, num) {
+                if (this.balance < num) {
+                    console.log('<轉帳失敗>')
+                    return;
+                }
+                this.balance -= num;
+                other.balance += num;
+                console.log('<轉帳完成>')
+                this.show();
+            }
+            this.show = function () {
+                console.log(`account: ${this.name}, balance: ${this.balance}`);
+            }
+        }
+        const account1 = new Account('test1', 1000);
+        const account2 = new Account('test2', 2000);
+        account1.deposit(500);
+        account2.withdraw(1500);
+        account2.withdraw(3000);
+        account1.transfer(account2, 50);
+        account2.show();
+        account2.transfer(account2, 2000);
+        account2.transfer(account1, 20);
+        account1.show();
+
+        //
+        // JSON
+        //
+        const str = JSON.stringify(account1);
+        console.log(str);
+        const obj = JSON.parse(str);
+        console.log(obj);
+        console.log(obj.name);
+        console.log(obj.balance);
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Array</title>
+</head>
+
+<body>
+    <script>
+        const arr = [1, 3, 5, 7, 9];
+
+        for (let i = 0; i < arr.length; i++) {
+            arr[i] = i ** 2 + i;
+        }
+
+        // add item/element
+        arr.push(arr.length ** 2 + arr.length);
+        arr.push(arr.length ** 2 + arr.length);
+
+        // remove last item/element
+        let last = arr.pop();
+        console.log(`last one is ${last}`)
+
+        // remove specific state: (start index, range/count)
+        console.log("deleted item:", arr.splice(0, 1))
+        console.log("deleted item:", arr.splice(2, 2))
+
+        console.log("final array:", arr);
+
+        // ES6
+        let sum = 0;
+        let sum2 = "0";
+        
+        arr.forEach(function (element, index, array) {
+            console.log(`${index+1}-th item is ${element}`);
+            sum += element;
+            sum2 += array[index];
+        });
+        console.log(sum, sum2);
+    </script>
+</body>
+
+</html>

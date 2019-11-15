@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Array</title>
+</head>
+
+<body>
+    <ul id="list">
+    </ul>
+    <script>
+        const arr = [1, true, 'test', [1, 2, 3, 4], { name: 'testName', age: 6 }];
+        console.log(arr);
+        console.log(typeof arr);
+        
+        console.log("[traditional for loop]");
+        for (let i = 0; i < arr.length; i++) {
+            console.log(arr[i])
+        }
+        console.log("[for..in loop]");
+        for (elt in arr){
+            console.log(elt)
+        }
+        console.log("[for..of loop]");
+        for (elt of arr){
+            console.log(elt)
+        }
+
+        const list = document.getElementById("list");
+        const tmpArr = ['First', '2', 'Three', 'IV'];
+        for (elt of tmpArr) {
+            list.innerHTML += `<li>${elt}</li>`;
+        }
+        tmpArr[tmpArr.length + 3] = 'Last';
+        for (elt of tmpArr) {
+            list.innerHTML += `<li>${elt}</li>`;
+        }
+        Array.isArray(tmpArr);
+        //tmpArr[OutOfBound] undefined
+    </script>
+</body>
+
+</html>
