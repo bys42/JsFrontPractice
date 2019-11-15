@@ -71,7 +71,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="emptyCart()">清空購物車</button>
+                    <button type="button" class="btn btn-danger btn-empty-cart">清空購物車</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
                 </div>
             </div>
@@ -95,7 +95,26 @@
     <script>
         // init cart
         const cart = new Cart();
-        
+        cart.initCart();
+
+        // j-query style, "." select class
+        $('.btn-empty-cart').click(
+            function () {
+                cart.emptyCart();
+            }
+        );
+
+        // only update at load:
+        // $('.btn-delete-item').click(
+        //     function () {}
+        // );
+
+        // delegate!
+        $('#cartTableBody').delegate('.btn-delete-item', 'click', function(){
+            const index = parseInt($(this).attr('data-index'));
+            cart.deleteItem(index);
+        });
+
         function onFormSubmit (e) {
             e.preventDefault();
             //console.log('[event]', e);
@@ -105,9 +124,12 @@
             const productId = $(form).attr('data-product-id');
             // get amount
             const amount = parseInt($(`#amount${productId}`).val());
-                        
-            cart.addItem(productId, amount);
+            $(`#amount${productId}`).val('0');
+            if (amount > 0) {
+                cart.addItem(productId, amount);
+            }
          };
+         
     </script>
 </body>
 

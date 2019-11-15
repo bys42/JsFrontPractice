@@ -83,7 +83,7 @@ function renderProducts() {
             //     </div>`
             // );
             $('#productRow').append(
-                `<div class="col-sm-6 col-md-4 col-lg-6">
+                `<div class="col-sm-6 col-md-4 col-lg-3">
                     <div class="card mt-2 mb-2">
                         <img src="${product.img}" class="card-img-top">
                         <form class="card-body" onsubmit="onFormSubmit(event)" data-product-id="${product.id}">
