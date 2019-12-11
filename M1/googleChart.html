@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Google Chart Practice</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] }); // load core chart package
+        google.charts.setOnLoadCallback(drawChart); // set callback when load complete
+
+        // data for pie chart: 2d array
+        // [
+        //     [Domain, value, (tool tip)], // header
+        //     [Title, Title],
+        //     [Data1, Data1 Value],
+        //     [..., ...]
+        // ]
+        function drawChart() {
+            // easy way: convert array to data table
+            // let data = google.visualization.arrayToDataTable([
+            //     ['Browser', '市佔率'],
+            //     ['Chrome', 70],
+            //     ['Firefox', 15],
+            //     ['Safari', 10],
+            //     ['Edge', 5]
+            // ]);
+
+            // generic way
+            let data = new google.visualization.DataTable();
+            data.addColumn({ role: "domian", type: "string", label: "Browser" });
+            data.addColumn({ role: "data", type: "number", label: "Market Share" });
+            data.addColumn({ role: "tooltip", type: "string"});
+            data.addRows([
+                ['Chrome', 70, '1st'],
+                ['Firefox', 15, '2nd'],
+                ['Safari', 10, '3rd'],
+                ['Edge', 5, null]
+            ]);
+
+            let options = {
+                title: 'Browser Market Share',
+                is3D: true,
+                colors: ['#880000', '#aa6666', '#cc9999', 'ffaaaa'],
+            };
+            // create chart object with specific div element
+            let chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            // let draw begin
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+
+<body>
+    <h3>Data Visualization</h3>
+    <div id="piechart" style="width: 1000; height: 1000;"></div>
+</body>
+
+</html>

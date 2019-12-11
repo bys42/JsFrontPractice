@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JavaScript Review</title>
+</head>
+
+<body>
+    <script>
+        // try to write a function which add numbers after a specific time and pass the result to caller.
+        // (asynchronous)
+        // type1: callback
+        // funcitonName (n1, n2, delayTime, callback)
+        // usage -  n1 : number
+        //          n2 : number
+        //          delayTime: number
+        //          callback: funciton(num of the add result){}
+        function delayAddType1(n1, n2, delayTime, callback) {
+            window.setTimeout(function () {
+                callback(n1 + n2);
+            }, delayTime);
+        };
+        function handler(result) {
+            console.log(result);
+        };
+        delayAddType1(3, 4, 2000, handler);
+
+        // type2 pass obj
+        // funcitonName (args)
+        //  - args: object
+        //        - n1 : number
+        //          n2 : number
+        //          delayTime: number
+        //          callback: funciton(num of the add result){}
+        //
+        function delayAddType2(args) {
+            window.setTimeout(function () {
+                args.callback(args.n1 + args.n2);
+            }, args.delayTime);
+        };
+        // hard-way
+        let obj = new Object();
+        obj.n1 = 3;
+        obj.n2 = 4;
+        obj.delayTime = 2500;
+        obj.callback = function (result) {
+            document.body.innerHTML = result;
+        };
+        delayAddType2(obj);
+        // or json
+        delayAddType2({
+            n1: 5,
+            n2: 6,
+            delayTime: 3000,
+            callback: function (result) {
+                console.log(result);
+            }
+        });
+    </script>
+</body>
+
+</html>
