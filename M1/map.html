@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+        #map {
+            width: 600px;
+            height: 450px;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Google Map practice</h3>
+    <button onClick="gotoHawaii();">Go To Hawaii</button>
+    <div id="map"></div>
+    <script>
+        let map;
+        function init() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 24, lng: 121 }, //北緯東經
+                zoom: 8,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+        }
+        function gotoHawaii() {
+            let position = { lat: 20, lng: -156 };
+            map.setCenter(position);
+            new google.maps.Marker({
+                position,
+                map,
+                icon: {
+                    url: 'https://cdn0.iconfinder.com/data/icons/gcons-2/22/airplane1-20.png'
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=init" async defer></script>
+</body>
+
+</html>

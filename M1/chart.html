@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(loadData);
+
+        function loadData() {
+            // use ajax load data fetch(URL).then(function(result){})
+            // otherway: let req = new XMLHttpRequest();
+            let src = 'https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json';
+            fetch(src)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (rawData) {
+                prepareCountyData(rawData);
+            });
+        }
+        function prepareCountyData(rawData) {
+            let finalData = [['County', 'AQI Score']];
+            let countyGroup = {};
+           
+            for (let i = 0; i < rawData.length; i++){
+                let county = rawData[i].County;
+                let aqi = parseInt(rawData[i].AQI)
+                if (countyGroup[county] == undefined) {
+                    countyGroup[county] = {aqi, count: 1};
+                } else {
+                    countyGroup[county].aqi += aqi;
+                    countyGroup[county].count++;
+                }
+            }
+            
+            for (let name in countyGroup) {
+                let avg = countyGroup[name].aqi / countyGroup[name].count;
+                finalData.push([name, avg]);
+            }
+            console.log(finalData)
+            drawChart(finalData);
+        }
+        function prepareStatusData(rawData) {
+            let finalData = [['Status', 'Quality']];
+            let statusGroup = {};
+            // console.log(statusData.x);
+            // console.log(statusData['x']);
+            // let name = 'x';
+            // console.log(statusData[name]);
+            for (let i = 0; i < rawData.length; i++){
+                let status = rawData[i].Status;
+                if (statusGroup[status] == undefined) {
+                    statusGroup[status] = 1;
+                } else {
+                    statusGroup[status]++;
+                }
+            }
+            
+            for (let name in statusGroup) {
+                finalData.push([name, statusGroup[name]])
+            }
+            
+            drawChart(finalData);
+        }
+        function drawChart(data) {
+            data = google.visualization.arrayToDataTable(data);
+
+            let options = {
+                title: '台灣空氣品質',
+                pieSliceText: 'label'
+            };
+
+            let chart = new google.visualization.ColumnChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+</body>
+
+</html>
