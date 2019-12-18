@@ -11,6 +11,14 @@
         #map {
             width: 600px;
             height: 450px;
+            margin: 0 auto;
+        }
+
+        #header {
+            width: 50%;
+            margin: 0 auto;
+            margin-bottom: 2%;
+            align-content: center;
         }
 
         /* Optional: Makes the sample page fill the window. */
@@ -24,31 +32,69 @@
 </head>
 
 <body>
-    <h3>Google Map practice</h3>
-    <button onClick="gotoHawaii();">Go To Hawaii</button>
+    <div id="header">
+        <h3>Google Map practice</h3>
+        <button onClick="gotoHawaii();">Go To Hawaii</button>
+    </div>
     <div id="map"></div>
     <script>
         let map;
-        function init() {
+        function loadData() {
+            let src = "https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json";
+            fetch(src).then(function (res) {
+                return res.json();
+            }).then(function (data) {
+                init(data);
+            })
+        }
+
+        function init(data) {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 24, lng: 121 }, //北緯東經
                 zoom: 8,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             });
+            map.addListener('zoom_changed', () => { console.log('Zoom Changed', map.getZoom()) });
+            map.addListener('click', event => {
+                new google.maps.Marker({ map, position: event.latLng })
+            });
+
+            data.forEach(element => showSite(element));
         }
+
+        function showSite({ SiteName, Longitude: lng, Latitude: lat, AQI }) {
+            let marker = new google.maps.Marker({
+                map, position: { lng: parseFloat(lng), lat: parseFloat(lat) },
+            });
+            marker.addListener('click', function () {
+                let win = new google.maps.InfoWindow({
+                    content: `<b>${SiteName}</b>: ${AQI}`//SiteName.bold() + ": " + AQI//,
+                });
+                win.open(map, marker);
+            });
+        }
+
         function gotoHawaii() {
             let position = { lat: 20, lng: -156 };
+
             map.setCenter(position);
-            new google.maps.Marker({
+            let marker = new google.maps.Marker({
                 position,
                 map,
                 icon: {
                     url: 'https://cdn0.iconfinder.com/data/icons/gcons-2/22/airplane1-20.png'
                 }
             });
+            marker.addListener('click', function () {
+                let win = new google.maps.InfoWindow({
+                    content: "Hello <br><b>Info Window</b>",
+                    position
+                });
+                win.open(map, marker);
+            })
         }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?callback=init" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=loadData" async defer></script>
 </body>
 
 </html>
