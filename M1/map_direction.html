@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Map Direction</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+        #map {
+            width: 600px;
+            height: 450px;
+            margin: 0 auto;
+        }
+
+        #header {
+            width: 50%;
+            margin: 0 auto;
+            margin-bottom: 2%;
+            align-content: center;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <h3>Google Map Direction Practice</h3>
+        <button onClick="test();">Test</button>
+    </div>
+    <div id="map"></div>
+    <script>
+
+        let map, service, renderer = null;
+        let orig = null, dest = null;
+
+        function init(data) {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 25, lng: 121.55 }, //北緯東經
+                zoom: 10,
+            });
+            map.addListener('click', event => {
+                if (!orig) {
+                    orig = event.latLng;
+                } else {
+                    dest = event.latLng
+                    test();
+                    orig = null, dest = null;
+                }
+            });
+            service = new google.maps.DirectionsService();
+        }
+
+        function test() {
+            service.route({
+                origin: orig,
+                destination: dest,
+                travelMode: google.maps.TravelMode.TRANSIT
+            }, function (result) {
+                if (renderer) {
+                    renderer.setMap(null);
+                }
+                renderer = new google.maps.DirectionsRenderer({
+                    map,
+                    directions: result
+                })
+            });
+        }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key='todo: try to add api key smartly'&callback=init" async defer></script>
+</body>
+
+</html>
