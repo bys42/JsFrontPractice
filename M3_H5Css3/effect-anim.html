@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            opacity: 1;
+        }
+
+        .box:hover {
+            animation: fadeoutAnim 1s;
+            /* default: dicard changes after animation complete */
+            /* fowards: keep changes  */
+            animation-fill-mode: forwards;
+        }
+
+        /* animation: effect definition*/
+        @keyframes fadeoutAnim {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: rotate(360deg);
+                background-color: blue;
+            }
+
+            100% {
+                opacity: 0.1;
+                width: 150px;
+                transform: rotate(720deg);
+                background-color: black;
+            }
+        }
+
+        @keyframes moveAnim {
+            0% {
+                left: 100px;
+            }
+
+            100% {
+                left: 200px;
+            }
+        }
+
+        .movableItem {
+            animation: moveAnim 1s;
+            animation-fill-mode: forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>visual effect</h3>
+    <div id="box" class="box"></div>
+    <button onclick="onMoveClick()">Move</button>
+
+    <script>
+        let box = document.querySelector("#box");
+
+        function onMoveClick() {
+            box.style.animation = "moveAnim 1s";
+            box.style.animationFillMode = "forwards";
+        };
+
+    </script>
+</body>
+
+</html>

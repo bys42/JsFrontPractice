@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Form Validation</title>
+    <style>
+        .ok {
+            color: green;
+        }
+
+        /* .field:invalid {
+            border-color: red;
+        }
+
+        .field:valid {
+            border-color: green;
+        } */
+
+        .field:invalid + .ok{
+            display: none;
+        }
+
+        .field:valid + .ok{
+            display: inline;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Form Validation</h1>
+    <form action="" onsubmit="alert('Sent')">
+        Name <input class="field" type="text" required /> <span class="ok">V</span><br />
+        Email <input class="field" type="email" required /> <span class="ok">V</span><br />
+        <!-- pattern: regrex -->
+        Password <input class="field" type="password" pattern="[0-9a-zA-Z]{4,8}" required /> <span
+            class="ok">V</span><br />
+        <!-- if 'required' value can not be null -->
+        Gender <select class="field" required>
+            <option value="">請選擇</option>
+            <option value="male">男</option>
+            <option value="femail">女</option>
+        </select> <span class="ok">V</span><br />
+        <input type="submit" value='Registration'>
+    </form>
+</body>
+
+</html>

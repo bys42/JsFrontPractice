@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            transition: opacity 1s, left 1.5s;
+            opacity: 1;
+        }
+
+        .box:hover {
+            opacity: 0.1;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h3>visual effect</h3>
+    <div id="box" class="box"></div>
+    <button onclick="onMoveClick()">Move</button>
+    <button onclick="onFadeOutClick()">Fade Out</button>
+    <script>
+        let box = document.querySelector("#box");
+        
+        box.addEventListener("transitionend", function (event) {
+            console.dir(event);
+            if (event.propertyName === "left") {
+                box.style.left = "100px";
+            }
+        });
+        
+        function onMoveClick() {
+            box.style.left = "200px";
+        };
+        
+        //
+        // while using JS: 
+        //
+
+        // function onMoveClick() {
+        //     let x = 0;
+        //     let moveId = window.setInterval(function () {
+        //         x += 2;
+        //         box.style.left = x + "px";
+        //         if (x >= 200) {
+        //             x = 0;
+        //             window.clearInterval(moveId);
+        //         }
+        //     }, 16);
+        // }
+
+        // function onFadeOutClick() {
+        //     let opacity = 1;
+        //     let fadeId = window.setInterval(function fadeOut() {
+        //         opacity -= 0.02
+        //         box.style.opacity = opacity;
+        //         if (opacity <= 0) {
+        //             opacity = 1;
+        //             window.clearInterval(fadeId);
+        //         }
+        //     }, 16);
+        // }
+
+    </script>
+</body>
+
+</html>
