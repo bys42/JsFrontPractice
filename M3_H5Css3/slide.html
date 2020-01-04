@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .keyvisual {
+            position: relative;
+            width: 100%;
+            height: 500px;
+        }
+
+        .keyvisual>.slide {
+            /* position would ref .keyvisual since .keyvisual has attr position=relative*/
+            /* it would ref window originally  */
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            background-image: url(bg1.jpg);
+            background-size: cover;
+            background-position: center center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .keyvisual>.current {
+            opacity: 1;
+        }
+
+        .keyvisual>.dots {
+            width: 200px;
+            position: absolute;
+            bottom: 30px;
+            left: calc(50% - 100px);
+            display: flex;
+            justify-content: center;
+            transition: opacity 1s, background-color 1s;
+            /* lazy way */
+            /* transition: all 1s; */
+        }
+
+        .keyvisual>.dots>.dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0px 10px;
+            background-color: black;
+            opacity: 0.5;
+        }
+
+        .keyvisual>.dots>.current {
+            background-color: red;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Key Visual</h1>
+
+    <div id="keyvisual" class="keyvisual">
+        <!-- Goal: make following dynamically -->
+        <!-- <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div> -->
+    </div>
+    <script>
+        function init() {
+            renderKeyvisual(getData());
+        }
+
+        function getData() {
+            let data = [
+                { image: "bg1.jpg", link: "https://www.google.com" },
+                { image: "bg2.jpg", link: "https://www.facebook.com" },
+                { image: "bg3.jpg", link: "https://www.twitter.com" }
+            ];
+            return data;
+        }
+
+        function renderKeyvisual(data) {
+            let keyvisual = document.querySelector("#keyvisual");
+            let dots = document.createElement("div");
+            dots.className = "dots";
+            data.forEach(({ image, link }) => {
+                let slide = document.createElement("div");
+                slide.className = "slide";
+                slide.style.backgroundImage = `url(${image})`
+                keyvisual.appendChild(slide);
+
+                let dot = document.createElement("div");
+                dot.className = "dot";
+                dots.appendChild(dot);
+            });
+
+            keyvisual.appendChild(dots);
+            initEffect();
+        }
+
+        let slides;
+        let dots;
+        let index;
+        function initEffect() {
+            slides = document.querySelectorAll(".slide");
+            dots = document.querySelectorAll(".dot");
+            index = 0;
+            slides[index].classList.add("current");
+            dots[index].classList.add("current");
+
+            window.setInterval(nextSlide, 3000);
+        }
+
+        function nextSlide() {
+            slides[index].classList.remove("current");
+            dots[index].classList.remove("current");
+            index = (index + 1) % slides.length;
+            slides[index].classList.add("current");
+            dots[index].classList.add("current");
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
