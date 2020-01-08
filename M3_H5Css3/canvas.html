@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>Canvas Practice</h3>
+    <!-- canvas width, height 需在html上設定 -->
+    <canvas id="cvs" width="640" height="480" style="border:1px solid black"></canvas>
+    <script>
+        let cvs = document.querySelector('#cvs');
+        let ctx = cvs.getContext("2d");// get context
+        // also, there's a cvs.getContext("webgl")...
+
+        // trysome
+        // fill pen
+        ctx.fillRect(50, 50, 60, 60); // x, y, width, height; (0, 0) = 左上
+        ctx.font = "30px calibri" // 同css font
+        ctx.fillText('test', 300, 50);
+
+        // stroke pen
+        ctx.strokeRect(50, 300, 40, 40);
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(50, 110, 60, 60);
+
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(50, 340, 40, 40);
+        ctx.strokeText('test2', 300, 100);
+
+        // 路徑: 定義 > 畫出
+        // 路徑: 定義
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.lineTo(230, 230);
+        ctx.lineTo(250, 210);
+        // 路徑: 畫出
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(200, 150, 30, 0, Math.PI); // center x, center y, radius, start angle, end angle
+        ctx.fill();
+        ctx.stroke();
+        
+        // curves
+        ctx.beginPath();
+        ctx.moveTo(300, 200);
+        ctx.quadraticCurveTo(300, 300, 400, 150);// control x, control y, end x, end y
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(300, 400);
+        ctx.bezierCurveTo(340, 250, 100, 330, 400, 340);
+        ctx.stroke();
+        ctx.fill();
+        
+    </script>
+
+</body>
+
+</html>

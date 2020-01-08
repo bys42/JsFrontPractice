@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>Canvas Practice</h3>
+    <!-- canvas width, height 需在html上設定 -->
+    <canvas id="cvs" width="640" height="480" style="border:1px solid black"></canvas>
+    <script>
+        let cvs = document.querySelector('#cvs');
+        let ctx = cvs.getContext("2d");
+        // linear transformation (target: canvas/coordinate sys)
+        // ctx.translate(x, y); // move to (x, y)
+        // ctx.rotate(angle);
+        // ctx.scale(x scale, y scale); // x scale, y scale
+
+        function drawOctastar(x, y, size = 25) {
+            ctx.translate(x, y);
+            ctx.fillRect(-size, -size, size * 2, size * 2);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(-size, -size, size * 2, size * 2);
+            ctx.rotate(-Math.PI / 4);
+            ctx.translate(-x, -y);
+        }
+
+        function drawOctapic(angle) {
+            // Draw image 
+            // 圖片物件 or canvas
+            let img = new Image(); // 相當於<img />
+            img.src = "bg1.jpg";
+            img.addEventListener("load", function () {
+                // 圖片載入完成才能畫上
+                // cvs.width = img.width;
+                // cvs.height = img.height;
+                // ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+                ctx.translate(200, 200);
+                ctx.drawImage(img, -50, -50, 100, 100);
+                ctx.rotate(Math.PI / 4);
+                ctx.drawImage(img, -50, -50, 100, 100);
+                ctx.translate(-200, -200);
+                ctx.rotate(-Math.PI / 4);
+            });
+        }
+
+        let stopDraw = true;
+        // or mouse down on cvs only
+        document.addEventListener("mousedown", () => { stopDraw = false });
+        document.addEventListener("mouseup", () => { stopDraw = true });
+
+        cvs.addEventListener("mousemove", function (e) {
+            if (stopDraw) return;
+            let x = e.clientX - cvs.offsetLeft;
+            let y = e.clientY - cvs.offsetTop;
+            let color = `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`;
+            let size = 5 + Math.random() * 20;
+            ctx.fillStyle = color;
+            drawOctastar(x, y, size);
+        });
+    </script>
+</body>
+
+</html>
