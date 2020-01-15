@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Video Player</title>
+</head>
+
+<body>
+    <h3>Video Player</h3>
+    <video id="movie" src="movie.mp4"></video id="movie">
+    <hr />
+    <div id="progress" style="width: 300px; height:5px;border:1px solid black; margin-bottom: 10px">
+        <div id="bar" style=" width: 300px; height:100%;background-color: black"></div>
+    </div>
+    <button onclick="play();">Play</button>
+    <button onclick="pause();">Pause</button>
+    <button onclick="replay();">Replay</button>
+
+    <script>
+        let movie = document.querySelector('#movie');
+        let progress = document.querySelector("#progress");
+
+        movie.addEventListener('ended', onMovieEnd);
+        movie.addEventListener('timeupdate', onMovieUpdate);
+        progress.addEventListener('mousedown', onProgressDrag);
+
+        function onProgressDrag(e) {
+            let time = movie.duration * (e.clientX - progress.offsetLeft) / 300;
+            movie.currentTime = time;
+            let move = function (e) {
+                movie.currentTime = movie.duration * (e.clientX - progress.offsetLeft) / 300;
+            }
+            let end = function (e) {
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', end);
+            }
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', end);
+        }
+
+        function onMovieEnd() {
+            console.log('Movie End');
+        }
+        function onMovieUpdate() {
+            bar = document.querySelector('#bar')
+            bar.style.width = (movie.currentTime / movie.duration * 100) + '%';
+        }
+        function play() {
+            movie.play();
+        }
+        function pause() {
+            movie.pause();
+        }
+        function replay() {
+            movie.currentTime = 0;
+            movie.play();
+        }
+    </script>
+</body>
+
+</html>
