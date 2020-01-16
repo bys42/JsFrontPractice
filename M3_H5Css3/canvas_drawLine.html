@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>DrawLine</h3>
+    Fill <input type="color" id="fill-color" value="#111111" />
+    Stroke <input type="color" id="stroke-color" value="#ffff00" />
+    Tool
+    <select id="tool">
+        <option value="line" default>Draw Line</option>
+        <option value="rect">Draw Rectangle</option>
+        <option value="octastar">Draw Octastar</option>
+    </select>
+    <hr />
+    <canvas id="cvs" width="640" height="480" style="position:absolute; border:1px solid black"></canvas>
+    <canvas id="cvs-tmp" width="640" height="480" style="position:absolute; border:1px solid black"></canvas>
+    <script>
+        let cvs = document.querySelector('#cvs');
+        let ctx = cvs.getContext("2d");
+        let cvsTmp = document.querySelector('#cvs-tmp');
+        let ctxTmp = cvsTmp.getContext("2d");
+
+        function drag(e) {
+            let strokeColor = document.querySelector('#stroke-color').value;
+            let fillColor = document.querySelector('#fill-color').value;
+            let tool = document.querySelector('#tool').value;
+
+            ctx.fillStyle = fillColor;
+            ctxTmp.fillStyle = fillColor;
+            ctx.strokeStyle = strokeColor;
+            ctxTmp.strokeStyle = strokeColor;
+            switch (tool) {
+                case 'line':
+                    drawLine(e);
+                    break;
+                case 'rect':
+                    drawRect(e);
+                    break;
+                case 'octastar':
+                    drawOctastar(e);
+                    break;
+                default:
+                    break;
+            }
+        }
+        function drawRect(e) {
+            let x = e.clientX - cvs.offsetLeft;
+            let y = e.clientY - cvs.offsetTop;
+
+            let move = function (e) {
+                let endx = e.clientX - cvs.offsetLeft;
+                let endy = e.clientY - cvs.offsetTop;
+                ctxTmp.clearRect(0, 0, cvsTmp.width, cvsTmp.height);
+                ctxTmp.fillRect(x, y, endx - x, endy - y);
+                ctxTmp.strokeRect(x, y, endx - x, endy - y);
+            }
+            let end = function (e) {
+                let endx = e.clientX - cvs.offsetLeft;
+                let endy = e.clientY - cvs.offsetTop;
+
+                ctxTmp.clearRect(0, 0, cvsTmp.width, cvsTmp.height);
+                ctx.fillRect(x, y, endx - x, endy - y);
+                ctx.strokeRect(x, y, endx - x, endy - y);
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', end);
+            }
+
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', end);
+        }
+        function drawLine(e) {
+            let x = e.clientX - cvs.offsetLeft;
+            let y = e.clientY - cvs.offsetTop;
+
+            let move = function (e) {
+                let endx = e.clientX - cvs.offsetLeft;
+                let endy = e.clientY - cvs.offsetTop;
+                ctxTmp.clearRect(0, 0, cvsTmp.width, cvsTmp.height);
+                ctxTmp.beginPath();
+                ctxTmp.moveTo(x, y);
+                ctxTmp.lineTo(endx, endy);
+                ctxTmp.stroke();
+            }
+            let end = function (e) {
+                let endx = e.clientX - cvs.offsetLeft;
+                let endy = e.clientY - cvs.offsetTop;
+                ctxTmp.clearRect(0, 0, cvsTmp.width, cvsTmp.height);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endx, endy);
+                ctx.stroke();
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', end);
+            }
+
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', end);
+        }
+        function drawOneOctastar(x, y, size = 25) {
+            ctx.translate(x, y);
+            ctx.fillRect(-size, -size, size * 2, size * 2);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(-size, -size, size * 2, size * 2);
+            ctx.rotate(-Math.PI / 4);
+            ctx.translate(-x, -y);
+        }
+        function drawOctastar(e) {
+            let x = e.clientX - cvs.offsetLeft;
+            let y = e.clientY - cvs.offsetTop;
+
+            let move = function (e) {
+                let x = e.clientX - cvs.offsetLeft;
+                let y = e.clientY - cvs.offsetTop;
+                let color = `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`;
+                let size = 5 + Math.random() * 20;
+                ctx.fillStyle = color;
+                drawOneOctastar(x, y, size);
+            }
+            let end = function (e) {
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', end);
+            }
+
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', end);
+        }
+        cvsTmp.addEventListener('mousedown', drag);
+    </script>
+</body>
+
+</html>
