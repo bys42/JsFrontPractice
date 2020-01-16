@@ -1,20 +1,23 @@
 // Subject:
 function Observable(typeList) {
     let callbackLists = {};
-
     for (type of typeList) {
         callbackLists[type] = [];
     }
 
     this.addEventListener = function (type, callback) {
-        if (type in callbackLists) {
-            callbackLists[type].push(callback);
+        let list = callbackLists[type];
+
+        if (list && !list.includes(callback)) {
+            list.push(callback);
         }
     }
 
     this.removeEventListener = function (type, callback) {
-        if (type in callbackLists && callbackLists[type].indexOf(callback) > -1) {
-            callbackList.splice(callbackLists[type].indexOf(callback), 1);
+        let list = callbackLists[type];
+
+        if (list && list.includes(callback)) {
+            list.splice(list.indexOf(callback), 1);
         }
     };
 
@@ -27,19 +30,15 @@ function Observable(typeList) {
 
 let subject = new Observable(['oneshot', 'periodic']);
 
-setTimeout(() => {
-    subject.notifyCallback('oneshot');
-}, 1000);
-
-setInterval(() => {
-    subject.notifyCallback('periodic')
-}, 1000)
+setTimeout(subject.notifyCallback, 500, 'oneshot');
+setInterval(subject.notifyCallback, 1000, 'periodic');
 
 // Listeners:
 // - oneshot listener
 let oneshot = () => {
     console.log("[oneshot listener] Hello")
 };
+subject.addEventListener('oneshot', oneshot);
 subject.addEventListener('oneshot', oneshot);
 
 // - periodic listener
