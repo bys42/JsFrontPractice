@@ -195,3 +195,19 @@ function onKeyup(event) {
             break;
     }
 }
+
+function changeScreenSize() {
+    let height = document.querySelector('#screen-size').value;
+    let screen = document.querySelector('#mainScreen');
+
+    switch (height) {
+        case 'full':
+            screen.style.height = '100%';
+            screen.style.width = '100%';
+            break;
+        default:
+            screen.style.height = height + 'px';
+            screen.style.width = height / 9 * 16 + 'px';
+            break;
+    }
+}
