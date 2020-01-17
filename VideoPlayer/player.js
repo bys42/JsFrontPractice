@@ -49,6 +49,34 @@ function VideoInterface() {
         }
     })
 }
+function StateIcon() {
+    let boxItem = document.querySelector('#state-icon');
+    this.show = () => {
+        boxItem.style.display = "block";
+    };
+    this.hide = () => {
+        boxItem.style.display = "none";
+    }
+    this.setState = state => {
+        switch (state) {
+            case 'playing':
+                boxItem.innerHTML = '◀︎';
+                break;
+            case 'pause':
+                boxItem.innerHTML = '⎮⎮';
+                break;
+            case 'foward':
+                boxItem.innerHTML = '>>';
+                break;
+            case 'back':
+                boxItem.innerHTML = '<<';
+                break;
+            default:
+                break;
+        }
+    }
+}
+var stateIcon = new StateIcon();
 
 function ControlPannel(videoInt) {
     let video = videoInt;
@@ -77,6 +105,7 @@ function ControlPannel(videoInt) {
     }
 
     function hideBox() {
+        stateIcon.hide();
         controlBox.style.display = "none";
     }
 
@@ -93,6 +122,7 @@ function ControlPannel(videoInt) {
     }
 
     function showBox() {
+        stateIcon.show();
         controlBox.style.display = "block";
         cancelDelayPlay();
         cancelDelayHide();
@@ -124,6 +154,7 @@ function ControlPannel(videoInt) {
 
     function videoPlay() {
         delayHide(2000);
+        stateIcon.setState('playing');
         setPlayTimeByBar();
         linkTimeBar();
         video.play();
@@ -131,10 +162,11 @@ function ControlPannel(videoInt) {
 
     function videoPause() {
         showBox();
+        stateIcon.setState('pause');
         video.pause();
     }
 
-    this.moveProgress = offset => {
+    function moveProgress(offset) {
         showBox();
         unlinkTimeBar();
         curPercent = parseFloat(bar.style.width) + offset;
@@ -151,6 +183,16 @@ function ControlPannel(videoInt) {
         } else {
             videoPause();
         }
+    }
+
+    this.foward = () => {
+        stateIcon.setState('foward');
+        moveProgress(1);
+    }
+
+    this.back = () => {
+        stateIcon.setState('back');
+        moveProgress(-1);
     }
 
     this.onMoveProgressEnd = () => {
@@ -171,10 +213,10 @@ function onKeydown(event) {
     event.preventDefault();
     switch (event.key) {
         case "ArrowLeft":
-            controlPannel.moveProgress(-1);
+            controlPannel.back();
             break;
         case "ArrowRight":
-            controlPannel.moveProgress(1);
+            controlPannel.foward();
             break;
         case "Enter":
             controlPannel.playSwitch();

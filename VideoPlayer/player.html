@@ -10,9 +10,11 @@
 </head>
 
 <body>
-
-    <div id="mainScreen" style="width: 640; height:480">
+    <div id="mainScreen">
         <video id="video" src="movie.mp4"></video>
+        <div id="state-icon" style="display:none">
+        
+        </div>
         <div id="control-box" style="display:none">
             <div id="current-time" class="time-info">
                 99:99:99
@@ -27,7 +29,7 @@
     </div>
     <select id="screen-size" onchange="changeScreenSize()">
         <option value="360" default>360 x 640</option>
-        <option value="540" default>540 x 960</option>
+        <option value="540">540 x 960</option>
         <option value="720">720p</option>
         <option value="1080">1080p</option>
         <option value="full">填滿網頁</option>
