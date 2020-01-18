@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./player.css">
+    <title>Video Player</title>
+</head>
+
+<body>
+    <div id="mainScreen">
+        <video id="video" src="movie.mp4"></video>
+        <div id="state-icon" style="display:none">
+        
+        </div>
+        <div id="control-box" style="display:none">
+            <div id="current-time" class="time-info">
+                99:99:99
+            </div>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+            <div id="total-time" class="time-info">
+                99:99:99
+            </div>
+        </div>
+    </div>
+    <select id="screen-size" onchange="changeScreenSize()">
+        <option value="360" default>360 x 640</option>
+        <option value="540">540 x 960</option>
+        <option value="720">720p</option>
+        <option value="1080">1080p</option>
+        <option value="full">填滿網頁</option>
+    </select>
+    <script src="./player.js"></script>
+</body>
+
+</html>
