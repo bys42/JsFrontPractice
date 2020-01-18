@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Cart</title>
+    <style>
+        #list {
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Cart</h3>
+    <hr>
+    <div id="list"></div>
+    <hr>
+    <a href="products.html">Back to products</a>
+    <script>
+        function render() {
+            let cart = JSON.parse(window.localStorage.getItem('cart'));
+            let list = document.querySelector('#list');
+            if (cart == null || cart.length == 0) {
+                list.innerHTML = '沒東西'
+            }
+            else {
+                list.innerHTML = ''
+                let item;
+                let total = 0;
+                cart.forEach((elt, i) => {
+                    let subtotal = elt.price * elt.quantity;
+                    list.innerHTML +=
+                        `<div>
+                            <button onclick="remove(${i})"> x </button>
+                            <span> ${elt.name} - price: $${elt.price}, quantity: ${elt.quantity}, subtotal: $${subtotal}</span>
+                        </div>`;
+                    total += subtotal;
+                });
+
+                list.innerHTML += `<h3>Total: $${total}</h3>`
+            }
+        }
+
+        function remove(index) {
+            let cart = JSON.parse(window.localStorage.getItem('cart'));
+            cart.splice(index, 1);
+            window.localStorage.setItem('cart', JSON.stringify(cart));
+            render();
+        }
+
+        render();
+    </script>
+</body>
+
+</html>

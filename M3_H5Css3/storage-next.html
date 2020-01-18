@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Web Storage</title>
+</head>
+
+<body>
+    <h3>Web Storage - Get</h3>
+    <button onclick="get()">Get</button>
+    <hr>
+    <a href="storage.html">Back</a>
+    <script>
+        function get () {
+            let data;
+            data = window.sessionStorage.getItem('data');
+            console.log ('session: ' + data.x, data.y);
+            
+            data = window.localStorage.getItem('data');
+            data = JSON.parse(data);
+            console.log ('local: ' + data.x, data.y);
+        }
+    </script>
+</body>
+
+</html>

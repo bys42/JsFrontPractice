@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Web Storage</title>
+</head>
+
+<body>
+    <h3>Web Storage - Set</h3>
+    <button onclick="save()">Save</button>
+    <hr>
+    <a href="storage-next.html">Next Page</a>
+    <script>
+        function save() {
+            // would convert to sting
+            let myData = {
+                x: 3, y: 4
+            }
+
+            window.sessionStorage.setItem('data', myData);
+
+            window.localStorage.setItem('data', JSON.stringify(myData));
+            
+        }
+    </script>
+</body>
+
+</html>

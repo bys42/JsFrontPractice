@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Heavy Task</title>
+</head>
+
+<body>
+    <h3>Heavy Work</h3>
+    <hr>
+    <div>
+        <button onclick="go()">Go</button>
+    </div>
+    <hr>
+    State: <span id="state">Idle</span>
+    <script>
+        let sum = 0;
+        let finished = 0;
+        let startTime;
+        let workerCount = 10
+
+        function go() {
+            let state = document.querySelector('#state');
+            startTime = Date.now();
+            sum = 0;
+            finished = 0;
+            state.innerHTML = 'Processing';
+            let worker1 = new Worker('worker.js');
+            worker1.postMessage('start');
+            worker1.addEventListener('message', onWorkEnd);
+
+            for (let i = 0; i < workerCount; i++) {
+                let worker = new Worker('worker.js');
+                worker.postMessage('start'); // message to worker1, could be found in e.data
+                worker.addEventListener('message', onWorkEnd);
+            }
+        }
+
+        function onWorkEnd(e) {
+            sum += e.data;
+            finished++;
+            if (finished == workerCount) {
+                state.innerHTML = 'Ok, Sum is ' + sum;
+                let endTime = Date.now();
+                console.log('Time Spent: ' + (endTime - startTime) / 1000 + ' seconds');
+            }
+        }
+    </script>
+</body>
+
+</html>

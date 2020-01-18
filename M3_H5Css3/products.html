@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Product List</title>
+    <style>
+        .item {
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Products</h3>
+    <hr>
+    <div class='item'>
+        <button onclick="add(1, 'RBT-099', 99, 1);">+</button>
+        <button onclick="add(1, 'RBT-099', 99, -1);">-</button>
+        RBT-099 數量: <span id='quantity-1'>0</span>
+    </div>
+
+    <div class='item'>
+        <button onclick="add(2, 'CAT-102', 102, 1);">+</button>
+        <button onclick="add(2, 'CAT-102', 102, -1);">-</button>
+        CAT-102 數量: <span id='quantity-2'>0</span>
+    </div>
+
+    <div class='item'>
+        <button onclick="add(3, 'DOG-272', 272, 1);">+</button>
+        <button onclick="add(3, 'DOG-272', 272, -1);">-</button>
+        DOG-272 數量: <span id='quantity-3'>0</span>
+    </div>
+
+    <div class='item'>
+        <button onclick="add(4, 'RAT-372', 372, 1);">+</button>
+        <button onclick="add(4, 'RAT-372', 372, -1);">-</button>
+        RAT-372 數量: <span id='quantity-4'>0</span>
+    </div>
+    <hr>
+    <a href="cart.html">Cart</a>
+    <script>
+        let cart = JSON.parse(window.localStorage.getItem('cart'));
+        if (cart) {
+            cart.forEach(elt => {
+                let id = '#quantity-' + elt.id;
+                let quantityText = document.querySelector(id);
+                quantityText.innerHTML = elt.quantity;
+                console.log(elt.quantity)
+            })
+        }
+
+        function add(id, name, price, quantity) {
+            let cart = JSON.parse(window.localStorage.getItem('cart') || '[]');
+            console.log(cart);
+            let item = cart.find(elt => elt.id == id);
+            console.log(item);
+            if (item) {
+                item.quantity += quantity;
+                if (item.quantity < 0) item.quantity = 0;
+                let id = '#quantity-' + item.id;
+                let quantityText = document.querySelector(id);
+                quantityText.innerHTML = item.quantity;
+            } else {
+                cart.push({ id, name, price, quantity });
+            }
+            window.localStorage.setItem('cart', JSON.stringify(cart));
+            console.log(cart)
+        }
+    </script>
+</body>
+
+</html>
