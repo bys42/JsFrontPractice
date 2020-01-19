@@ -41,6 +41,10 @@ function VideoInterface() {
             "get": function () { return video.currentTime },
             "set": function (time) { video.currentTime = time }
         },
+        "volume": {
+            "get": function () { return video.volume },
+            "set": function (volume) { video.volume = volume }
+        },
         "duration": {
             "get": function () { return video.duration; }
         },
@@ -51,19 +55,14 @@ function VideoInterface() {
 }
 function StateIcon() {
     let boxItem = document.querySelector('#state-icon');
-    this.show = () => {
-        boxItem.style.display = "block";
-    };
-    this.hide = () => {
-        boxItem.style.display = "none";
-    }
-    this.setState = state => {
+
+    this.setState = (state, data) => {
         switch (state) {
             case 'playing':
                 boxItem.innerHTML = '◀︎';
                 break;
             case 'pause':
-                boxItem.innerHTML = '⎮⎮';
+                boxItem.innerHTML = ' || ';
                 break;
             case 'foward':
                 boxItem.innerHTML = '>>';
@@ -71,26 +70,53 @@ function StateIcon() {
             case 'back':
                 boxItem.innerHTML = '<<';
                 break;
+            case 'volume':
+                boxItem.innerHTML = data;
+                break;
             default:
                 break;
         }
     }
 }
-var stateIcon = new StateIcon();
 
-function ControlPannel(videoInt) {
+function TimeBar(duration) {
+    let curTimeText = document.getElementById('current-time');
+    let totalTimeText = document.getElementById('total-time');
+    let progress = document.getElementById('progress');
+    let curTime;
+    let totalTime;
+    let percentage = 0;
+
+    progress.style.width = '0%';
+    totalTime = duration;
+    totalTimeText.innerHTML = secondsToTime(totalTime);
+
+    this.setTime = function (time) {
+        curTime = time;
+        curTime = Math.max(0, curTime);
+        curTime = Math.min(totalTime, curTime);
+        curTimeText.innerText = secondsToTime(curTime);
+        percentage = curTime / totalTime;
+        progress.style.width = (percentage * 100) + '%';
+    }
+}
+
+function ControlPanel(videoInt, isAutoPlay = true) {
     let video = videoInt;
-    let controlBox = document.querySelector('#control-box');
-    let totalTimeText = document.querySelector("#total-time");
-    let curTimeText = document.querySelector("#current-time");
-    let bar = document.querySelector("#progress");
-    let isTimeBarLink = false;
+    let controlPanel = document.querySelector('#control-panel');
+    let timeBar = new TimeBar(video.duration);
+    let stateIcon = new StateIcon();
+
+    let panelTime = 0;
+    let isTimeSync = false;
     let delayPlayId = null;
     let delayHideId = null;
 
-    bar.style.width = '0%';
-    controlBox.style.display = "none";
-    totalTimeText.innerHTML = secondsToTime(video.duration);
+    if (isAutoPlay) {
+        syncTime();
+    }
+
+    controlPanel.style.display = "none";
 
     function delayPlay(time) {
         cancelDelayPlay();
@@ -105,8 +131,7 @@ function ControlPannel(videoInt) {
     }
 
     function hideBox() {
-        stateIcon.hide();
-        controlBox.style.display = "none";
+        controlPanel.style.display = "none";
     }
 
     function delayHide(time) {
@@ -122,42 +147,36 @@ function ControlPannel(videoInt) {
     }
 
     function showBox() {
-        stateIcon.show();
-        controlBox.style.display = "block";
+        controlPanel.style.display = "block";
         cancelDelayPlay();
         cancelDelayHide();
     }
 
-    function setBarByPlayTime() {
-        bar.style.width = (video.currentTime / video.duration * 100) + '%';
-        curTimeText.innerHTML = secondsToTime(video.currentTime);
+    function onTimeUpdate() {
+        panelTime = video.currentTime;
+        timeBar.setTime(panelTime);
     }
 
-    function setPlayTimeByBar() {
-        let barWidth = parseFloat(bar.style.width);
-        video.currentTime = barWidth * video.duration / 100;
-    }
-
-    function unlinkTimeBar() {
-        if (isTimeBarLink) {
-            video.onUpdateUnregister(setBarByPlayTime);
-            isTimeBarLink = false;
+    function unsyncTime() {
+        if (isTimeSync) {
+            video.onUpdateUnregister(onTimeUpdate);
+            isTimeSync = false;
         }
     }
 
-    function linkTimeBar() {
-        if (!isTimeBarLink) {
-            video.onUpdateRegister(setBarByPlayTime);
-            isTimeBarLink = true;
+    function syncTime() {
+        if (!isTimeSync) {
+            video.onUpdateRegister(onTimeUpdate);
+            isTimeSync = true;
         }
     };
 
     function videoPlay() {
         delayHide(2000);
         stateIcon.setState('playing');
-        setPlayTimeByBar();
-        linkTimeBar();
+        video.currentTime = panelTime;
         video.play();
+        syncTime();
     }
 
     function videoPause() {
@@ -167,18 +186,13 @@ function ControlPannel(videoInt) {
     }
 
     function moveProgress(offset) {
-        showBox();
-        unlinkTimeBar();
-        curPercent = parseFloat(bar.style.width) + offset;
-        curPercent = Math.max(0, curPercent);
-        curPercent = Math.min(100, curPercent);
-        curTimeText.innerHTML = secondsToTime(curPercent * video.duration / 100);
-        bar.style.width = curPercent + '%';
+        unsyncTime();
+        panelTime += offset;
+        timeBar.setTime(panelTime);
     }
 
     this.playSwitch = () => {
         if (video.paused) {
-            setBarByPlayTime();
             videoPlay();
         } else {
             videoPause();
@@ -186,25 +200,48 @@ function ControlPannel(videoInt) {
     }
 
     this.foward = () => {
+        showBox();
         stateIcon.setState('foward');
-        moveProgress(1);
+        moveProgress(10);
     }
 
     this.back = () => {
+        showBox();
         stateIcon.setState('back');
-        moveProgress(-1);
+        moveProgress(-10);
     }
 
     this.onMoveProgressEnd = () => {
         delayPlay(500);
     }
+
+    function changeVolume (newVolume) {
+        newVolume = Math.min(1, newVolume);
+        newVolume = Math.max(0, newVolume);
+        stateIcon.setState('volume', Math.round(newVolume * 100));
+        video.volume = newVolume;
+    }
+
+    this.volumeup = () => {
+        showBox();
+        changeVolume(video.volume + 0.05)
+    }
+
+    this.volumedown = () => {
+        showBox();
+        changeVolume(video.volume - 0.05)
+    }
+
+    this.onVolumeChangeEnd = () => {
+        delayHide(2000);
+    }
 }
 
 let video = new VideoInterface();
-let controlPannel = null;
+let controlPanel = null;
 
 video.onloadedmetadata(() => {
-    controlPannel = new ControlPannel(video);
+    controlPanel = new ControlPanel(video);
     document.addEventListener('keydown', onKeydown);
     document.addEventListener('keyup', onKeyup);
 })
@@ -213,13 +250,19 @@ function onKeydown(event) {
     event.preventDefault();
     switch (event.key) {
         case "ArrowLeft":
-            controlPannel.back();
+            controlPanel.back();
             break;
         case "ArrowRight":
-            controlPannel.foward();
+            controlPanel.foward();
+            break;
+        case "ArrowUp":
+            controlPanel.volumeup();
+            break;
+        case "ArrowDown":
+            controlPanel.volumedown();
             break;
         case "Enter":
-            controlPannel.playSwitch();
+            controlPanel.playSwitch();
             break;
         default:
             break;
@@ -231,16 +274,20 @@ function onKeyup(event) {
     switch (event.key) {
         case "ArrowLeft":
         case "ArrowRight":
-            controlPannel.onMoveProgressEnd();
+            controlPanel.onMoveProgressEnd();
+            break;
+        case "ArrowUp":
+        case "ArrowDown":
+            controlPanel.onVolumeChangeEnd();
             break;
         default:
             break;
     }
 }
 
-function changeScreenSize() {
-    let height = document.querySelector('#screen-size').value;
-    let screen = document.querySelector('#mainScreen');
+function changeVideoSize() {
+    let height = document.querySelector('#video-size').value;
+    let screen = document.querySelector('#screen-Container');
 
     switch (height) {
         case 'full':

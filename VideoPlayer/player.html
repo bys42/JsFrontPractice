@@ -10,28 +10,34 @@
 </head>
 
 <body>
-    <div id="mainScreen">
-        <video id="video" src="movie.mp4"></video>
-        <div id="state-icon" style="display:none">
-        
+    <div id="screen-Container">
+        <div id='video-screen'>
+            <video id="video" src="movie.mp4" preload="metadata" autoplay></video>
         </div>
-        <div id="control-box" style="display:none">
-            <div id="current-time" class="time-info">
-                99:99:99
+        
+        <div id="control-panel"　style="display:none">
+            <div id="state-icon">
             </div>
-            <div id="progress-bar">
-                <div id="progress"></div>
-            </div>
-            <div id="total-time" class="time-info">
-                99:99:99
+
+            <div id="progress-box">
+                <div id="current-time" class="time-info">
+                    99:99:99
+                </div>
+                <div id="progress-bar">
+                    <div id="progress"></div>
+                </div>
+                <div id="total-time" class="time-info">
+                    99:99:99
+                </div>
             </div>
         </div>
     </div>
-    <select id="screen-size" onchange="changeScreenSize()">
+
+    <select id="video-size" onchange="changeVideoSize()">
         <option value="360" default>360 x 640</option>
         <option value="540">540 x 960</option>
-        <option value="720">720p</option>
-        <option value="1080">1080p</option>
+        <option value="720">720 x 1440</option>
+        <option value="1080">1080 x 1920</option>
         <option value="full">填滿網頁</option>
     </select>
     <script src="./player.js"></script>
