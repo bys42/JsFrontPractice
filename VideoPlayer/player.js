@@ -52,7 +52,11 @@ function VideoInterface() {
             "get": function () { return video.paused; }
         }
     })
+
+    this.openning = { start: 60, end: 120 };
+    this.ending = { start: video.duration - 120, end: video.duration - 60 };
 }
+
 function StateIcon() {
     let boxItem = document.querySelector('#state-icon');
 
@@ -112,11 +116,47 @@ function LinearAccelerator(acc, init = 0) {
     }
 }
 
+function VideoSkipper(video) {
+    let isSkipEnabled = false;
+
+    function isInOpenning() {
+        return video.currentTime > video.openning.start && video.currentTime < video.openning.end;
+    }
+
+    function isInEnding() {
+        return video.currentTime > video.ending.start && video.currentTime < video.ending.end;
+    }
+
+    function skipHandler() {
+        if (isSkipEnabled) {
+            if (isInOpenning()) {
+                video.currentTime = video.openning.end;
+            }
+            else if (isInEnding()) {
+                video.currentTime = video.ending.end;
+            }
+        }
+    };
+
+    video.onUpdateRegister(skipHandler);
+
+    this.enable = () => {
+        if (!isInOpenning() && !isInEnding()) {
+            isSkipEnabled = true;
+        };
+    }
+
+    this.disable = () => {
+        isSkipEnabled = false;
+    }
+}
+
 function ControlPanel(videoInt, isAutoPlay = true) {
     let video = videoInt;
     let controlPanel = document.querySelector('#control-panel');
     let timeBar = new TimeBar(video.duration);
     let stateIcon = new StateIcon();
+    let skipper = new VideoSkipper(video);
 
     let panelTime = 0;
     let isTimeSync = false;
@@ -159,6 +199,7 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     }
 
     function onTimeUpdate() {
+        skipper.enable();
         panelTime = video.currentTime;
         timeBar.setTime(panelTime);
     }
@@ -178,7 +219,7 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     };
 
     function videoPlay() {
-        delayHide(2000);
+        delayHide(3000);
         stateIcon.setState('playing');
         video.currentTime = panelTime;
         video.play();
@@ -213,12 +254,14 @@ function ControlPanel(videoInt, isAutoPlay = true) {
 
     this.foward = () => {
         showBox();
+        skipper.disable();
         stateIcon.setState('foward');
         moveProgress(accFoward.move());
     }
 
     this.back = () => {
         showBox();
+        skipper.disable();
         stateIcon.setState('back');
         moveProgress(-accBack.move());
     }
