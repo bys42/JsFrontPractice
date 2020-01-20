@@ -58,22 +58,22 @@ function VideoInterface() {
 }
 
 function StateIcon() {
-    let boxItem = document.querySelector('#state-icon');
+    let icon = document.querySelector('#state-icon');
     
-    this.setState = (state, data) => {
-        boxItem.className = "";
+    this.setState = (state) => {
+        icon.className = "";
         switch (state) {
             case 'playing':
-                boxItem.classList.add('play-icon');
+                icon.classList.add('play-icon');
                 break;
             case 'pause':
-                boxItem.classList.add('pause-icon');
+                icon.classList.add('pause-icon');
                 break;
             case 'foward':
-                boxItem.classList.add('forward-icon');
+                icon.classList.add('forward-icon');
                 break;
             case 'back':
-                boxItem.classList.add('back-icon');
+                icon.classList.add('back-icon');
                 break;
             case 'volume':
                 break;
