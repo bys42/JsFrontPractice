@@ -93,11 +93,22 @@ function TimeBar(duration) {
 
     this.setTime = function (time) {
         curTime = time;
-        curTime = Math.max(0, curTime);
-        curTime = Math.min(totalTime, curTime);
         curTimeText.innerText = secondsToTime(curTime);
         percentage = curTime / totalTime;
         progress.style.width = (percentage * 100) + '%';
+    }
+}
+
+function LinearAccelerator(acc, init = 0) {
+    let velocity = 0;
+
+    this.move = () => {
+        velocity += acc;
+        return velocity;
+    };
+
+    this.stop = () => {
+        velocity = init;
     }
 }
 
@@ -112,10 +123,7 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     let delayPlayId = null;
     let delayHideId = null;
 
-    if (isAutoPlay) {
-        syncTime();
-    }
-
+    syncTime();
     controlPanel.style.display = "none";
 
     function delayPlay(time) {
@@ -130,13 +138,11 @@ function ControlPanel(videoInt, isAutoPlay = true) {
         }
     }
 
-    function hideBox() {
-        controlPanel.style.display = "none";
-    }
-
     function delayHide(time) {
         cancelDelayHide();
-        delayHideId = setTimeout(hideBox, time);
+        if (!delayHideId) {
+            delayHideId = setTimeout(() => { controlPanel.style.display = "none" }, time);
+        }
     }
 
     function cancelDelayHide() {
@@ -188,6 +194,8 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     function moveProgress(offset) {
         unsyncTime();
         panelTime += offset;
+        panelTime = Math.max(0, panelTime);
+        panelTime = Math.min(video.duration, panelTime);
         timeBar.setTime(panelTime);
     }
 
@@ -199,23 +207,33 @@ function ControlPanel(videoInt, isAutoPlay = true) {
         }
     }
 
+    let ACCELERATION = 3;
+    let accFoward = new LinearAccelerator(ACCELERATION);
+    let accBack = new LinearAccelerator(ACCELERATION);
+
     this.foward = () => {
         showBox();
         stateIcon.setState('foward');
-        moveProgress(10);
+        moveProgress(accFoward.move());
     }
 
     this.back = () => {
         showBox();
         stateIcon.setState('back');
-        moveProgress(-10);
+        moveProgress(-accBack.move());
     }
 
-    this.onMoveProgressEnd = () => {
+    this.onFowardEnd = () => {
+        accFoward.stop();
         delayPlay(500);
     }
 
-    function changeVolume (newVolume) {
+    this.onBackEnd = () => {
+        accBack.stop();
+        delayPlay(500);
+    }
+
+    function changeVolume(newVolume) {
         newVolume = Math.min(1, newVolume);
         newVolume = Math.max(0, newVolume);
         stateIcon.setState('volume', Math.round(newVolume * 100));
@@ -273,8 +291,10 @@ function onKeyup(event) {
     event.preventDefault();
     switch (event.key) {
         case "ArrowLeft":
+            controlPanel.onBackEnd()
+            break;
         case "ArrowRight":
-            controlPanel.onMoveProgressEnd();
+            controlPanel.onFowardEnd()
             break;
         case "ArrowUp":
         case "ArrowDown":
