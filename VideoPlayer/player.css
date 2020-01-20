@@ -18,16 +18,34 @@
 
 #state-icon {
     position: absolute;
-    top: 4%;
-    right: 4%;
-    width: 10%;
-    height: 8%;
-    background-color: grey;
+    top: 6%;
+    right: 5%;
+    width: 9.45%;
+    height: 12%;
     opacity: 0.9;
     border-radius: 5px;
     border: 1px solid whitesmoke;
     box-shadow: 0px 0px 2px black;
+    background-image:url("/play_status_icon.png");
+    vertical-align:middle;
     text-align: center;
+    background-size: auto 100%;
+}
+
+.play-icon {
+	background-position: 0 0;
+}
+
+.pause-icon {
+	background-position: 25% 0;
+}
+
+.back-icon {
+	background-position: 50% 0;
+}
+
+.forward-icon {
+	background-position: 75% 0;
 }
 
 #progress-box {
