@@ -11,8 +11,14 @@
 
 <body>
     <div id="screen-Container">
-        <div id='video-screen'>
-            <video id="video" src="movie.mp4" preload="metadata" autoplay></video>
+        <div id='video-Container'>
+            <!-- <video id="video-Content" preload="metadata" autoplay -->
+            <video id="video-Content" preload="metadata">
+                <source src="movie.mp4">
+            </video>
+        </div>
+
+        <div id="ad-Container">
         </div>
         
         <div id="control-panel"　style="display:none">
@@ -40,6 +46,7 @@
         <option value="1080">1920 x 1080</option>
         <option value="full">填滿網頁</option>
     </select>
+    <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
     <script src="./player.js"></script>
 </body>
 

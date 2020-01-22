@@ -13,7 +13,7 @@ function secondsToTime(val) {
 }
 
 function VideoInterface() {
-    let video = document.querySelector('#video');
+    let video = document.querySelector('#video-Content');
     let isMetaLoaded = false;
 
     if (video.readyState >= 1) {
@@ -28,9 +28,25 @@ function VideoInterface() {
         }
     }
 
-    this.play = () => video.play();
+    let isAdPaused = true;
 
-    this.pause = () => video.pause();
+    this.play = () => {
+        if (adsManager.getRemainingTime() < 0) {
+            video.play();
+        } else {
+            playAds();
+            isAdPaused = false;
+        }
+    }
+
+    this.pause = () => {
+        if (adsManager.getRemainingTime() < 0) {
+            video.pause();
+        } else {
+            adsManager.pause();
+            isAdPaused = true;
+        }
+    }
 
     this.onUpdateRegister = callback => video.addEventListener('timeupdate', callback);
 
@@ -49,7 +65,12 @@ function VideoInterface() {
             "get": function () { return video.duration; }
         },
         "paused": {
-            "get": function () { return video.paused; }
+            "get": function () {
+                if (adsManager.getRemainingTime() < 0) {
+                    return video.paused;
+                }
+                return isAdPaused;
+            }
         }
     })
 
@@ -59,7 +80,7 @@ function VideoInterface() {
 
 function StateIcon() {
     let icon = document.querySelector('#state-icon');
-    
+
     this.setState = (state) => {
         icon.className = "";
         switch (state) {
@@ -223,6 +244,7 @@ function ControlPanel(videoInt, isAutoPlay = true) {
         stateIcon.setState('playing');
         video.currentTime = panelTime;
         video.play();
+
         syncTime();
     }
 
@@ -303,8 +325,9 @@ let controlPanel = null;
 
 video.onloadedmetadata(() => {
     controlPanel = new ControlPanel(video);
-    document.addEventListener('keydown', onKeydown);
-    document.addEventListener('keyup', onKeyup);
+    window.addEventListener('keydown', onKeydown);
+    window.addEventListener('keyup', onKeyup);
+    init();
 })
 
 function onKeydown(event) {
@@ -362,4 +385,130 @@ function changeVideoSize() {
             screen.style.width = height / 9 * 16 + 'px';
             break;
     }
+}
+
+
+var adsManager;
+var adsLoader;
+var adDisplayContainer;
+var intervalTimer;
+var playButton;
+var videoContent;
+
+function init() {
+    videoContent = document.getElementById('video-Content');
+
+    adDisplayContainer = new google.ima.AdDisplayContainer(document.getElementById('ad-Container'), videoContent);
+    adDisplayContainer.initialize();
+
+    adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+
+    adsLoader.addEventListener(
+        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+        onAdsManagerLoaded,
+        false);
+    adsLoader.addEventListener(
+        google.ima.AdErrorEvent.Type.AD_ERROR,
+        onAdError,
+        false);
+
+    // var contentEndedListener = function () { adsLoader.contentComplete(); };
+    // videoContent.onended = contentEndedListener;
+
+    var adsRequest = new google.ima.AdsRequest();
+    adsRequest.adTagUrl = 'https://pubads.g.doubleclick.net/gampad/ads?' +
+        'sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&' +
+        'impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&' +
+        'cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=';
+
+    adsRequest.linearAdSlotWidth = 640;
+    adsRequest.linearAdSlotHeight = 400;
+
+    adsRequest.nonLinearAdSlotWidth = 640;
+    adsRequest.nonLinearAdSlotHeight = 150;
+
+    adsLoader.requestAds(adsRequest);
+}
+
+let asStarted = false;
+function playAds() {
+    if (!asStarted) {
+        adsManager.start();
+        asStarted = true;
+    } else {
+        adsManager.resume();
+    }
+}
+
+function onAdsManagerLoaded(adsManagerLoadedEvent) {
+    var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+    adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+    adsManager = adsManagerLoadedEvent.getAdsManager(videoContent, adsRenderingSettings);
+    adsManager.addEventListener(
+        google.ima.AdErrorEvent.Type.AD_ERROR,
+        onAdError);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+        onContentPauseRequested);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+        onContentResumeRequested);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+        onAdEvent);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.LOADED,
+        onAdEvent);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.STARTED,
+        onAdEvent);
+    adsManager.addEventListener(
+        google.ima.AdEvent.Type.COMPLETE,
+        onAdEvent);
+    adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
+}
+
+function onAdEvent(adEvent) {
+    var ad = adEvent.getAd();
+    console.log('adEvent.type', adEvent.type);
+    switch (adEvent.type) {
+        case google.ima.AdEvent.Type.LOADED:
+            console.log('google.ima.AdEvent.Type.LOADED')
+            if (!ad.isLinear()) {
+                videoContent.play();
+            }
+            break;
+        case google.ima.AdEvent.Type.STARTED:
+            console.log('google.ima.AdEvent.Type.STARTED')
+            if (ad.isLinear()) {
+                intervalTimer = setInterval(
+                    function () {
+                        var remainingTime = adsManager.getRemainingTime();
+                        console.log(remainingTime);
+                    },
+                    300);
+            }
+            break;
+        case google.ima.AdEvent.Type.COMPLETE:
+            console.log('google.ima.AdEvent.Type.COMPLETE')
+            if (ad.isLinear()) {
+                clearInterval(intervalTimer);
+            }
+            break;
+    }
+}
+
+function onAdError(adErrorEvent) {
+    console.log(adErrorEvent.getError());
+    adsManager.destroy();
+}
+
+function onContentPauseRequested() {
+    console.log('onContentPauseRequeste')
+    videoContent.pause();
+}
+
+function onContentResumeRequested() {
+    console.log('onContentResumeRequested')
+    videoContent.play();
 }
