@@ -20,11 +20,11 @@
 
         <div id="ad-Container">
         </div>
-        
-        <div id="control-panel"　style="display:none">
-            <div id="state-icon">
-            </div>
 
+        <div id="state-icon">
+        </div>
+        
+        <div id="control-panel" style="display:none">
             <div id="progress-box">
                 <div id="current-time" class="time-info">
                     99:99:99
@@ -37,15 +37,18 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <select id="video-size" onchange="changeVideoSize()">
-        <option value="360" default>640 x 360</option>
-        <option value="540">960 x 540</option>
-        <option value="720">1440 x 720</option>
-        <option value="1080">1920 x 1080</option>
-        <option value="full">填滿網頁</option>
-    </select>
+        <div id="volume-icon" style="display:none">
+
+        </div>
+        <select id="video-size" onchange="changeVideoSize()">
+            <option value="360" default>640 x 360</option>
+            <option value="540">960 x 540</option>
+            <option value="720">1440 x 720</option>
+            <option value="1080">1920 x 1080</option>
+            <option value="full">填滿網頁</option>
+        </select>
+    </div>
     <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
     <script src="./player.js"></script>
 </body>

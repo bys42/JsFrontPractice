@@ -78,9 +78,36 @@ function VideoInterface() {
     this.ending = { start: video.duration - 120, end: video.duration - 60 };
 }
 
+class View {
+    constructor(view) {
+        this.view = view;
+        this._delayHideId = null;
+    }
+
+    _cancelDelayHide() {
+        if (this._delayHideId) {
+            clearTimeout(this._delayHideId);
+            this._delayHideId = null;
+        }
+    }
+
+    hide(time = 0) {
+        this._cancelDelayHide();
+        this._delayHideId = setTimeout(() => { this.view.style.display = "none" }, time);
+    };
+
+    show() {
+        this._cancelDelayHide();
+        this.view.style.display = "block";
+    };
+}
+
 function StateIcon() {
     let icon = document.querySelector('#state-icon');
+    let iconView = new View(icon);
 
+    this.hide = (time) => { iconView.hide(time) };
+    this.show = () => { iconView.show() };
     this.setState = (state) => {
         icon.className = "";
         switch (state) {
@@ -104,7 +131,19 @@ function StateIcon() {
     }
 }
 
+function VolumeIcon() {
+    let icon = document.getElementById('volume-icon');
+    let iconView = new View(icon);
+
+    this.hide = (time) => { iconView.hide(time) };
+    this.show = () => { iconView.show() };
+    this.set = function (volume) {
+        icon.innerHTML = volume;
+    }
+}
+
 function TimeBar(duration) {
+    let timeBarView = new View(document.getElementById('control-panel'));
     let curTimeText = document.getElementById('current-time');
     let totalTimeText = document.getElementById('total-time');
     let progress = document.getElementById('progress');
@@ -116,6 +155,8 @@ function TimeBar(duration) {
     totalTime = duration;
     totalTimeText.innerHTML = secondsToTime(totalTime);
 
+    this.hide = (time) => { timeBarView.hide(time) };
+    this.show = () => { timeBarView.show() };
     this.setTime = function (time) {
         curTime = time;
         curTimeText.innerText = secondsToTime(curTime);
@@ -174,7 +215,6 @@ function VideoSkipper(video) {
 
 function ControlPanel(videoInt, isAutoPlay = true) {
     let video = videoInt;
-    let controlPanel = document.querySelector('#control-panel');
     let timeBar = new TimeBar(video.duration);
     let stateIcon = new StateIcon();
     let skipper = new VideoSkipper(video);
@@ -182,10 +222,10 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     let panelTime = 0;
     let isTimeSync = false;
     let delayPlayId = null;
-    let delayHideId = null;
 
     syncTime();
-    controlPanel.style.display = "none";
+    timeBar.hide();
+    stateIcon.hide();
 
     function delayPlay(time) {
         cancelDelayPlay();
@@ -197,26 +237,6 @@ function ControlPanel(videoInt, isAutoPlay = true) {
             clearTimeout(delayPlayId);
             delayPlayId = null;
         }
-    }
-
-    function delayHide(time) {
-        cancelDelayHide();
-        if (!delayHideId) {
-            delayHideId = setTimeout(() => { controlPanel.style.display = "none" }, time);
-        }
-    }
-
-    function cancelDelayHide() {
-        if (delayHideId) {
-            clearTimeout(delayHideId);
-            delayHideId = null;
-        }
-    }
-
-    function showBox() {
-        controlPanel.style.display = "block";
-        cancelDelayPlay();
-        cancelDelayHide();
     }
 
     function onTimeUpdate() {
@@ -240,7 +260,8 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     };
 
     function videoPlay() {
-        delayHide(3000);
+        timeBar.hide(3000);
+        stateIcon.hide(3000);
         stateIcon.setState('playing');
         video.currentTime = panelTime;
         video.play();
@@ -249,9 +270,11 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     }
 
     function videoPause() {
-        showBox();
+        timeBar.show();
+        stateIcon.show();
         stateIcon.setState('pause');
         video.pause();
+        cancelDelayPlay();
     }
 
     function moveProgress(offset) {
@@ -275,17 +298,21 @@ function ControlPanel(videoInt, isAutoPlay = true) {
     let accBack = new LinearAccelerator(ACCELERATION);
 
     this.foward = () => {
-        showBox();
-        skipper.disable();
+        timeBar.show();
+        stateIcon.show();
         stateIcon.setState('foward');
+        skipper.disable();
         moveProgress(accFoward.move());
+        cancelDelayPlay();
     }
 
     this.back = () => {
-        showBox();
-        skipper.disable();
+        timeBar.show();
+        stateIcon.show();
         stateIcon.setState('back');
+        skipper.disable();
         moveProgress(-accBack.move());
+        cancelDelayPlay();
     }
 
     this.onFowardEnd = () => {
@@ -298,25 +325,28 @@ function ControlPanel(videoInt, isAutoPlay = true) {
         delayPlay(500);
     }
 
+
+    let volumeIcon = new VolumeIcon();
+
     function changeVolume(newVolume) {
         newVolume = Math.min(1, newVolume);
         newVolume = Math.max(0, newVolume);
-        stateIcon.setState('volume', Math.round(newVolume * 100));
         video.volume = newVolume;
+        volumeIcon.set(Math.round(newVolume * 100));
     }
 
     this.volumeup = () => {
-        showBox();
+        volumeIcon.show();
         changeVolume(video.volume + 0.05)
     }
 
     this.volumedown = () => {
-        showBox();
+        volumeIcon.show();
         changeVolume(video.volume - 0.05)
     }
 
     this.onVolumeChangeEnd = () => {
-        delayHide(2000);
+        volumeIcon.hide(3000);
     }
 }
 

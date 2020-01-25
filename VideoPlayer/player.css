@@ -104,5 +104,20 @@
 }
 
 #video-size {
-    z-index: 2;
+    position: absolute;
+    bottom: -5%;
+}
+
+#volume-icon {
+    position: absolute;
+    top: 6%;
+    left: 5%;
+    width: 9%;
+    height: 10%;
+    background-color: grey;
+    opacity: 0.9;
+    border-radius: 5px;
+    border: 1px solid whitesmoke;
+    box-shadow: 0px 0px 2px black;
+    text-align: center;
 }
