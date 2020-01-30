@@ -24,7 +24,10 @@ function VideoInterface() {
         if (isMetaLoaded) {
             callback();
         } else {
-            video.addEventListener('loadedmetadata', callback);
+            video.addEventListener('loadedmetadata', () => {
+                this.ending = { start: video.duration - 60, end: video.duration};
+                callback();
+            });
         }
     }
 
@@ -75,7 +78,7 @@ function VideoInterface() {
     })
 
     this.openning = { start: 60, end: 120 };
-    this.ending = { start: video.duration - 120, end: video.duration - 60 };
+    this.ending = { start: video.duration - 60, end: video.duration };
 }
 
 class View {
@@ -142,6 +145,19 @@ function VolumeIcon() {
     }
 }
 
+function MessageBox() {
+    let box = document.getElementById('message-box');
+    let boxView = new View(box);
+
+    this.show = (time = 3000) => {
+        boxView.show();
+        boxView.hide(time);
+    };
+    this.set = function (message) {
+        box.innerHTML = message;
+    }
+}
+
 function TimeBar(duration) {
     let timeBarView = new View(document.getElementById('control-panel'));
     let curTimeText = document.getElementById('current-time');
@@ -180,6 +196,7 @@ function LinearAccelerator(acc, init = 0) {
 
 function VideoSkipper(video) {
     let isSkipEnabled = false;
+    let skipMessage = new MessageBox();
 
     function isInOpenning() {
         return video.currentTime > video.openning.start && video.currentTime < video.openning.end;
@@ -193,9 +210,13 @@ function VideoSkipper(video) {
         if (isSkipEnabled) {
             if (isInOpenning()) {
                 video.currentTime = video.openning.end;
+                skipMessage.set('Openning Skipped');
+                skipMessage.show();
             }
             else if (isInEnding()) {
                 video.currentTime = video.ending.end;
+                skipMessage.set('Ending Skipped');
+                skipMessage.show();
             }
         }
     };
@@ -203,9 +224,8 @@ function VideoSkipper(video) {
     video.onUpdateRegister(skipHandler);
 
     this.enable = () => {
-        if (!isInOpenning() && !isInEnding()) {
-            isSkipEnabled = true;
-        };
+        if (isSkipEnabled || isInOpenning() || isInEnding()) return;
+        isSkipEnabled = true;
     }
 
     this.disable = () => {
